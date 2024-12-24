@@ -9,6 +9,16 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
 import { MatButtonModule } from '@angular/material/button';
+import { LoginService } from './loginService.service';
+
+interface LoginResponse {
+  token: string;
+}
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
 
 @Component({
   selector: 'app-side-login',
@@ -23,19 +33,64 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './side-login.component.html',
 })
 export class AppSideLoginComponent {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private loginService: LoginService
+  ) {}
 
-  form = new FormGroup({
-    uname: new FormControl('', [Validators.required, Validators.minLength(6)]),
+  loginData = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.minLength(6)]),
     password: new FormControl('', [Validators.required]),
+    rememberDevice: new FormControl(false)
   });
 
   get f() {
-    return this.form.controls;
+    return this.loginData.controls;
   }
 
   submit() {
-    // console.log(this.form.value);
-    this.router.navigate(['/']);
+    if (this.loginData.valid) {
+      const { email, password } = this.loginData.value;
+
+      const loginRequest: LoginRequest = {
+        email: email || '',
+        password: password || ''
+      };
+
+      this.loginService.login(loginRequest).subscribe({
+        next: (response: LoginResponse) => {
+          if (response && response.token) {
+            localStorage.setItem('auth-token', response.token);
+            this.router.navigate(['/']);
+          }
+        },
+        error: (error) => {
+          if (error?.error?.message) {
+            this.loginData.get('username')?.setErrors({
+              serverError: error.error.message
+            });
+          }
+        }
+      });
+    } else {
+      Object.keys(this.loginData.controls).forEach(key => {
+        const control = this.loginData.get(key);
+        control?.markAsTouched();
+      });
+    }
+  }
+
+  getErrorMessage(controlName: string): string {
+    const control = this.loginData.get(controlName);
+    if (control?.hasError('required')) {
+      return `${controlName.charAt(0).toUpperCase() + controlName.slice(1)} is required`;
+    }
+    if (control?.hasError('minlength')) {
+      return 'Username must be at least 6 characters';
+    }
+    if (control?.hasError('serverError')) {
+      return control.getError('serverError');
+    }
+    return '';
   }
 }
