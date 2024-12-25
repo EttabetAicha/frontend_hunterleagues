@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
-import { RegisterService } from './RegisterService.service';
+import { RegisterService } from '../../../services/RegisterService.service';
 
 interface RegisterRequest {
   username: string;

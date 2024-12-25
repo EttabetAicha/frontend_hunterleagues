@@ -9,7 +9,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
 import { MatButtonModule } from '@angular/material/button';
-import { LoginService } from './loginService.service';
+import { LoginService } from '../../../services/loginService.service';
 
 interface LoginResponse {
   token: string;

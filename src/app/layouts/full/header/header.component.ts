@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { MatButtonModule } from '@angular/material/button';
+import { LoginService } from 'src/app/services/loginService.service';
 
 @Component({
   selector: 'app-header',
@@ -20,10 +21,15 @@ import { MatButtonModule } from '@angular/material/button';
 })
 
 export class HeaderComponent {
+
   @Input() showToggle = true;
   @Input() toggleChecked = false;
   @Output() toggleMobileNav = new EventEmitter<void>();
   @Output() toggleCollapsed = new EventEmitter<void>();
 
-  constructor() {}
+  constructor(private loginService: LoginService) {}
+
+  logout() {
+    this.loginService.logout();
+  }
 }
