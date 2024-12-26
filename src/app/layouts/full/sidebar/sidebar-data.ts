@@ -10,8 +10,14 @@ export const navItems: NavItem[] = [
     route: '/dashboard',
   },
   {
-    navCap: 'Ui Components',
+    navCap: 'Our services',
     divider: true
+  },
+  {
+    displayName: 'Manage Users',
+    iconName: 'solar:archive-minimalistic-line-duotone',
+    route: '/ui-components/users',
+
   },
   {
     displayName: 'Badge',
