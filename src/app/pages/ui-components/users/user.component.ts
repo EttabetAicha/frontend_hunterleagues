@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UserService } from '../../../services/user-service.service';
 import { AddUserDialogComponent } from './add-user.component';
+import { EditUserDialogComponent } from './edit-user.component';
 
 @Component({
   selector: 'app-user',
@@ -73,6 +74,29 @@ export class UserComponent implements OnInit {
       }
     });
   }
+
+  editUser(element: any): void {
+    const dialogRef = this.dialog.open(EditUserDialogComponent, {
+      width: '500px',
+      data: {
+        id: element.id,
+        firstName: element.uname.split(' ')[0],
+        lastName: element.uname.split(' ')[1],
+        email: element.email,
+        cin: element.cin,
+        nationality: element.nationality,
+        role: element.role,
+        licenseExpirationDate: element.licenseExpirationDate
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers();
+      }
+    });
+  }
+
 
   deleteUser(id: string): void {
     this.userService.deleteUser(id).subscribe({

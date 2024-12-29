@@ -85,10 +85,8 @@ export class AddUserDialogComponent {
 
   onSubmit(): void {
     if (this.userForm.valid) {
-    
-      const userData = { ...this.userForm.value };
 
-      // Format the date to ISO string if it exists
+      const userData = { ...this.userForm.value };
       if (userData.licenseExpirationDate) {
         userData.licenseExpirationDate = new Date(userData.licenseExpirationDate)
           .toISOString();
@@ -100,7 +98,6 @@ export class AddUserDialogComponent {
         },
         error: (error) => {
           console.error('Failed to add user', error);
-          // You might want to show an error message to the user here
         }
       });
     }
