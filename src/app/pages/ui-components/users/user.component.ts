@@ -24,8 +24,7 @@ import { EditUserDialogComponent } from './edit-user.component';
     MatMenuModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatDialogModule,
-    AddUserDialogComponent
+    MatDialogModule
   ],
   templateUrl: './user.component.html',
 })

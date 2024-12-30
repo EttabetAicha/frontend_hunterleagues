@@ -14,10 +14,15 @@ export const navItems: NavItem[] = [
     divider: true
   },
   {
-    displayName: 'Manage Users',
-    iconName: 'solar:archive-minimalistic-line-duotone',
+    displayName: ' Users Manage',
+    iconName: 'solar:shield-user-broken',
     route: '/ui-components/users',
 
+  },
+  {
+    displayName: 'Species Manager',
+    iconName: 'solar:add-folder-outline',
+    route: '/ui-components/species',
   },
   {
     displayName: 'Badge',

@@ -9,6 +9,7 @@ import { AppTooltipsComponent } from './tooltips/tooltips.component';
 import { AppFormsComponent } from './forms/forms.component';
 import { AppTablesComponent } from './tables/tables.component';
 import { UserComponent } from './users/user.component';
+import { SpeciesComponent } from './species/species.component';
 
 export const UiComponentsRoutes: Routes = [
   {
@@ -17,6 +18,10 @@ export const UiComponentsRoutes: Routes = [
       {
         path: 'users',
         component: UserComponent,
+      },
+      {
+        path:'species',
+        component:SpeciesComponent
       },
       {
         path: 'badge',
