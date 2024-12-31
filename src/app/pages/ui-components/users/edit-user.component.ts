@@ -11,7 +11,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { Inject } from '@angular/core';
 
-// Reuse existing validators
 function passwordStrengthValidator(): ValidationErrors | null {
   return (control: AbstractControl): ValidationErrors | null => {
     const password = control.value;

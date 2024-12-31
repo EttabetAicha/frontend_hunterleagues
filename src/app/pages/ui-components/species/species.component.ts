@@ -10,6 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SpeciesService } from '../../../services/species.service';
 import { AddSpeciesDialogComponent } from './add-user.component';
+import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
+import { EditSpeciesDialogComponent } from './edit-species-dialog.component';
 
 
 
@@ -67,6 +69,18 @@ export class SpeciesComponent implements OnInit {
     openAddDialog(): void {
       const dialogRef = this.dialog.open(AddSpeciesDialogComponent, {
         width: '500px'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.loadSpecies();
+        }
+      });
+    }
+    openEditDialog(element: any): void {
+      const dialogRef = this.dialog.open(EditSpeciesDialogComponent, {
+        width: '500px',
+        data: element
       });
 
       dialogRef.afterClosed().subscribe(result => {

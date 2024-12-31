@@ -42,7 +42,6 @@
                 'bg-light-warning text-warning': element.difficulty === 'LEGENDARY',
                 'bg-light-error text-error': element.difficulty === 'EPIC',
                 'bg-light-primary text-primary': element.difficulty === 'RARE'
-
               }" class="role-badge f-w-600 p-6 p-y-4 f-s-12">
                 {{ element.difficulty }}
               </span>
@@ -58,6 +57,12 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
+                <button
+                (click)="openEditDialog(element)"
+                mat-menu-item>
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
+                </button>
                 <button mat-menu-item (click)="deleteSpecies(element.id)">
                   <mat-icon>delete</mat-icon>
                   <span>Delete</span>
