@@ -2,38 +2,33 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-interface Participation {
+interface ParticipationResponse {
   id: string;
-  userId: string;
-  competitionId: string;
-  score: number;
+  username: string;
+  code: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParticipationService {
-  private apiUrl = 'http://localhost:8081/api/participations'; 
+  private apiUrl = 'http://localhost:8081/api/participations';
 
   constructor(private http: HttpClient) {}
 
-  getParticipations(): Observable<Participation[]> {
-    return this.http.get<Participation[]>(this.apiUrl);
+  registerParticipation(participation: { userId: string; competitionId: string }): Observable<ParticipationResponse> {
+    return this.http.post<ParticipationResponse>(`${this.apiUrl}/register`, participation);
   }
 
-  addParticipation(participation: Participation): Observable<Participation> {
-    return this.http.post<Participation>(this.apiUrl, participation);
+  getCompetitionResults(userId: string, competitionId: string): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/results/${userId}/${competitionId}`
+    );
   }
 
-  updateParticipation(participation: Participation): Observable<Participation> {
-    return this.http.put<Participation>(`${this.apiUrl}/${participation.id}`, participation);
-  }
-
-  deleteParticipation(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  getParticipationById(id: string): Observable<Participation> {
-    return this.http.get<Participation>(`${this.apiUrl}/${id}`);
+  getCompetitionPodium(competitionId: string): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/podium/${competitionId}`
+    );
   }
 }

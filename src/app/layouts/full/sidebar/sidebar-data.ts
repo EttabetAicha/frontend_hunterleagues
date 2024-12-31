@@ -14,7 +14,7 @@ export const navItems: NavItem[] = [
     divider: true
   },
   {
-    displayName: ' Users Manage',
+    displayName: ' Users Manager',
     iconName: 'solar:shield-user-broken',
     route: '/ui-components/users',
 
@@ -23,6 +23,17 @@ export const navItems: NavItem[] = [
     displayName: 'Species Manager',
     iconName: 'solar:add-folder-outline',
     route: '/ui-components/species',
+  },
+  {
+    displayName: 'Participation Manager',
+    iconName: 'solar:play-circle-bold',
+    route: '/ui-components/participation',
+
+  },
+  {
+    displayName: 'Competition Manager',
+    iconName: 'solar:bolt-circle-outline',
+    route: '/ui-components/competition',
   },
   {
     displayName: 'Badge',

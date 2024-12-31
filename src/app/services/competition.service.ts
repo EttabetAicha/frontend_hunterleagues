@@ -17,12 +17,12 @@ interface Competition {
   providedIn: 'root'
 })
 export class CompetitionService {
-  private apiUrl = 'http://localhost:8081/api/competitions'; 
+  private apiUrl = 'http://localhost:8081/api/competitions'; // Adjust the URL to your backend endpoint
 
   constructor(private http: HttpClient) {}
 
-  getCompetitions(): Observable<Competition[]> {
-    return this.http.get<Competition[]>(this.apiUrl);
+  getCompetitions(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?page=${page}&size=${size}`);
   }
 
   addCompetition(competition: Competition): Observable<Competition> {
