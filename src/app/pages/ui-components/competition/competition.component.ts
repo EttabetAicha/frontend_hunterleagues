@@ -91,18 +91,26 @@ export class CompetitionComponent implements OnInit {
     const userInfo = this.loginService.getUserInfoFromToken();
     console.log(userInfo);
     if (userInfo && userInfo.sub) {
-      const userId = userInfo.userId; 
+      const userId = userInfo.userId;
       console.log(userId);
-      this.participationService.registerParticipation({ userId, competitionId }).subscribe({
-        next: (response) => {
-          console.log('Participation registered successfully:', response);
-          this.snackBar.open('Participation registered successfully!', 'Close', {
-            duration: 3000,
-          });
+      this.participationService.isUserRegistered(userId, competitionId).subscribe({
+        next: (isRegistered) => {
+          console.log('Is user registered:', isRegistered);
+          if (Array.isArray(isRegistered) && isRegistered.length > 0) {
+            this.snackBar.open('You are already registered for this competition.', 'Close', {
+              duration: 3000,
+            });
+          } else if (typeof isRegistered === 'boolean' && isRegistered) {
+            this.snackBar.open('You are already registered for this competition.', 'Close', {
+              duration: 3000,
+            });
+          } else {
+            this.registerParticipation(userId, competitionId);
+          }
         },
         error: (error) => {
-          console.error('Failed to register participation:', error);
-          this.snackBar.open('Failed to register participation.', 'Close', {
+          console.error('Failed to check registration status:', error);
+          this.snackBar.open('Failed to check registration status.', 'Close', {
             duration: 3000,
           });
         }
@@ -114,6 +122,23 @@ export class CompetitionComponent implements OnInit {
       });
     }
   }
+  registerParticipation(userId: string, competitionId: string): void {
+    this.participationService.registerParticipation({ userId, competitionId }).subscribe({
+      next: (response) => {
+        console.log('Participation registered successfully:', response);
+        this.snackBar.open('Participation registered successfully!', 'Close', {
+          duration: 3000,
+        });
+      },
+      error: (error) => {
+        console.error('Failed to register participation:', error);
+        this.snackBar.open('Failed to register participation.', 'Close', {
+          duration: 3000,
+        });
+      }
+    });
+  }
+
    deleteCompetition(id: string): void {
     this.competitionService.deleteCompetition(id).subscribe({
       next: () => {

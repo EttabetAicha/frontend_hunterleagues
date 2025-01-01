@@ -19,6 +19,9 @@ export class ParticipationService {
   registerParticipation(participation: { userId: string; competitionId: string }): Observable<ParticipationResponse> {
     return this.http.post<ParticipationResponse>(`${this.apiUrl}/register`, participation);
   }
+   isUserRegistered(userId: string, competitionId: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/results/${userId}/${competitionId}`);
+  }
 
   getCompetitionResults(userId: string, competitionId: string): Observable<any[]> {
     return this.http.get<any[]>(
