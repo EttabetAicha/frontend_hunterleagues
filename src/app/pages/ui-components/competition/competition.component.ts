@@ -10,7 +10,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CompetitionService } from '../../../services/competition.service';
 import { AddCompetitionDialogComponent } from './add-competition-dialog.component';
+import { ParticipationService } from 'src/app/services/Participation.service';
+import { LoginService } from 'src/app/services/loginService.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 // import { EditCompetitionDialogComponent } from './edit-competition-dialog/edit-competition-dialog.component';
+
 
 interface Competition {
   id: string;
@@ -48,7 +52,11 @@ export class CompetitionComponent implements OnInit {
 
   constructor(
     private competitionService: CompetitionService,
-    private dialog: MatDialog
+    private participationService:ParticipationService,
+    private loginService: LoginService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+
   ) {}
 
   ngOnInit(): void {
@@ -79,21 +87,34 @@ export class CompetitionComponent implements OnInit {
       }
     });
   }
-
-  // openEditDialog(element: Competition): void {
-  //   const dialogRef = this.dialog.open(EditCompetitionDialogComponent, {
-  //     width: '500px',
-  //     data: element
-  //   });
-
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     if (result) {
-  //       this.loadCompetitions();
-  //     }
-  //   });
-  // }
-
-  deleteCompetition(id: string): void {
+  participate(competitionId: string): void {
+    const userInfo = this.loginService.getUserInfoFromToken();
+    console.log(userInfo);
+    if (userInfo && userInfo.sub) {
+      const userId = userInfo.userId; 
+      console.log(userId);
+      this.participationService.registerParticipation({ userId, competitionId }).subscribe({
+        next: (response) => {
+          console.log('Participation registered successfully:', response);
+          this.snackBar.open('Participation registered successfully!', 'Close', {
+            duration: 3000,
+          });
+        },
+        error: (error) => {
+          console.error('Failed to register participation:', error);
+          this.snackBar.open('Failed to register participation.', 'Close', {
+            duration: 3000,
+          });
+        }
+      });
+    } else {
+      console.error('User ID not found in token');
+      this.snackBar.open('User ID not found in token.', 'Close', {
+        duration: 3000,
+      });
+    }
+  }
+   deleteCompetition(id: string): void {
     this.competitionService.deleteCompetition(id).subscribe({
       next: () => {
         this.dataSource = this.dataSource.filter(competition => competition.id !== id);

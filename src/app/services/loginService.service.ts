@@ -1,8 +1,11 @@
+import { jwtDecode } from 'jwt-decode';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+
+
 
 export interface LoginResponse {
   token: string;
@@ -49,6 +52,20 @@ export class LoginService {
 
   getToken(): string | null {
     return localStorage.getItem('auth-token');
+  }
+  getUserInfoFromToken(): any {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken;
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      return null;
+    }
   }
 
   private clearAuthAndRedirect(): void {

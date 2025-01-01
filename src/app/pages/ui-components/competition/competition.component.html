@@ -4,9 +4,7 @@
     <button mat-raised-button color="primary" (click)="openAddDialog()" style="margin: 12px;">
       <mat-icon>add</mat-icon> Create Competition
     </button>
-    <!-- <button mat-raised-button color="accent" (click)="participate()">
-      <mat-icon>person_add</mat-icon> Participate
-    </button> -->
+
     <div class="competitions-container" *ngIf="!isLoading; else loading">
       <mat-card *ngFor="let competition of dataSource" class="competition-card" style="width: 40%;">
         <mat-card-header>
@@ -20,6 +18,9 @@
           <p>Open Registration: {{ competition.openRegistration }}</p>
         </mat-card-content>
         <mat-card-actions>
+          <button mat-raised-button color="accent" (click)="participate(competition.id)">
+            <mat-icon>person_add</mat-icon> Participate
+          </button>
           <!-- <button mat-button (click)="editCompetition(competition.id)">Edit</button> -->
           <button mat-button (click)="deleteCompetition(competition.id)">Delete</button>
         </mat-card-actions>
