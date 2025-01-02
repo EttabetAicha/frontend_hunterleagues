@@ -78,7 +78,6 @@ export class ParticipationComponent implements OnInit {
     });
   }
 
-  // Method to register a new participation
   registerParticipation(userId: string, competitionId: string): void {
     this.participationService.registerParticipation({ userId, competitionId }).subscribe({
       next: (response) => {
