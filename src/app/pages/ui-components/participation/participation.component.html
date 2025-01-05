@@ -1,77 +1,26 @@
-<mat-card class="cardWithShadow">
-  <mat-card-content>
-    <mat-card-title>Participations List</mat-card-title>
-    <!-- <button mat-raised-button color="primary" (click)="openAddDialog()">
-      <mat-icon>add</mat-icon> Create Participation
-    </button> -->
+<div *ngIf="isLoading" class="loading-spinner">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
 
-    <div class="table-responsive" *ngIf="!isLoading; else loading">
-      <table mat-table [dataSource]="dataSource" class="w-100">
-        <!-- User ID Column -->
-        <ng-container matColumnDef="userId">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14 p-l-0">
-            User ID
-          </th>
-          <td mat-cell *matCellDef="let element" class="p-l-0">
-            <div class="d-flex align-items-center">
-              <div class="m-l-16">
-                <h6 class="mat-subtitle-1 f-s-14 f-w-600">{{ element.username }}</h6>
-              </div>
-            </div>
-          </td>
-        </ng-container>
-
-        <!-- Competition ID Column -->
-        <ng-container matColumnDef="competitionId">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-            Competition ID
-          </th>
-          <td mat-cell *matCellDef="let element" class="p-l-0">
-            <h6 class="mat-subtitle-1 f-s-14 f-w-600">{{ element.code }}</h6>
-          </td>
-        </ng-container>
-
-        <!-- Score Column -->
-        <ng-container matColumnDef="score">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-            Score
-          </th>
-          <td mat-cell *matCellDef="let element" class="p-l-0">
-            <h6 class="mat-subtitle-1 f-s-14 f-w-600">{{ element.score }}</h6>
-          </td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
-            Actions
-          </th>
-          <td mat-cell *matCellDef="let element" class="p-l-0">
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <!-- <button mat-menu-item (click)="openEditDialog(element)">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button> -->
-              <!-- <button mat-menu-item (click)="deleteParticipation(element.id)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button> -->
-            </mat-menu>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-    </div>
-
-    <ng-template #loading>
-      <div class="loading-container">
-        <mat-spinner></mat-spinner>
+<div *ngIf="!isLoading">
+  <mat-card class="cardWithShadow" >
+    <mat-card-content>
+      <mat-card-title>Participations List</mat-card-title>
+      <div class="participation-cards-container">
+        <div *ngFor="let element of dataSource" class="participation-card">
+          <mat-card class="mat-elevation-z8 fixed-width-card" style="width:30%;">
+            <mat-card-header>
+              <mat-card-title>{{element.username}}</mat-card-title>
+              <mat-card-subtitle>{{element.code}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+            <button mat-button color="accent" (click)="huntParticipation(element.userId, element.competitionId)">
+                Hunt
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
       </div>
-    </ng-template>
-  </mat-card-content>
-</mat-card>
+    </mat-card-content>
+  </mat-card>
+</div>

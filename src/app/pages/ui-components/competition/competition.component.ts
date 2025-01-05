@@ -139,7 +139,7 @@ export class CompetitionComponent implements OnInit {
     });
   }
 
-   deleteCompetition(id: string): void {
+  deleteCompetition(id: string): void {
     this.competitionService.deleteCompetition(id).subscribe({
       next: () => {
         this.dataSource = this.dataSource.filter(competition => competition.id !== id);

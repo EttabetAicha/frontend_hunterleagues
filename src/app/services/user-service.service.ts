@@ -51,6 +51,9 @@ export class UserService {
       .set('size', size.toString());
     return this.http.get<any[]>(`${this.apiUrl}/history/${id}`, { params });
   }
+  getUserById(id: string): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.apiUrl}/userId/${id}`);
+  }
 
   login(authRequest: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, authRequest);

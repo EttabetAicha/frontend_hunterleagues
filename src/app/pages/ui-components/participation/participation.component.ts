@@ -8,13 +8,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ParticipationService } from '../../../services/Participation.service';
-
-interface ParticipationResponse {
-  id: string;
-  username: string;
-  code: string;
-}
+import { ParticipationService, ParticipationResponse } from '../../../services/Participation.service';
+import { CompetitionService } from '../../../services/competition.service';
+import { UserService } from 'src/app/services/user-service.service';
+import { HuntService } from 'src/app/services/hunt.service';
 
 @Component({
   selector: 'app-participation',
@@ -33,60 +30,100 @@ interface ParticipationResponse {
   templateUrl: './participation.component.html',
 })
 export class ParticipationComponent implements OnInit {
-  displayedColumns: string[] = ['username', 'code', 'actions'];
-  dataSource: ParticipationResponse[] = [];
+  displayedColumns: string[] = ['userName', 'competitionName', 'actions'];
+  dataSource: any[] = [];
   isLoading = true;
+  errorMessage: string = '';
+
 
   constructor(
     private participationService: ParticipationService,
-    private dialog: MatDialog
+    private userService: UserService,
+    private competitionService: CompetitionService,
+    private dialog: MatDialog,
+    private huntService: HuntService
   ) {}
 
   ngOnInit(): void {
-    // Since we don't have a getAll endpoint, we might want to
-    // load specific competition results or show a message
+    this.loadParticipations();
+  }
+
+  loadParticipations(): void {
+    this.isLoading = true;
+    this.participationService.getAllParticipations().subscribe({
+      next: (participations) => {
+        this.dataSource = participations.map(participation => {
+          return {
+            ...participation,
+            userName: '',
+            competitionName: ''
+          };
+        });
+        this.loadAdditionalDetails();
+      },
+      error: (error) => {
+        console.error('Failed to load participations:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadAdditionalDetails(): void {
+    this.dataSource.forEach(participation => {
+      this.userService.getUserById(participation.userId).subscribe({
+        next: (user) => {
+          participation.username = `${user.firstName} ${user.lastName}`;
+        },
+        error: (error) => {
+          console.error('Failed to load user details:', error);
+        }
+      });
+
+      this.competitionService.getCompetitionById(participation.competitionId).subscribe({
+        next: (competition) => {
+          participation.competitionName = competition.code;
+        },
+        error: (error) => {
+          console.error('Failed to load competition details:', error);
+        }
+      });
+    });
     this.isLoading = false;
+
   }
 
-  // Method to load results for a specific competition and user
-  loadCompetitionResults(userId: string, competitionId: string): void {
-    this.isLoading = true;
-    this.participationService.getCompetitionResults(userId, competitionId).subscribe({
-      next: (data) => {
-        this.dataSource = data;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Failed to load competition results:', error);
-        this.isLoading = false;
-      }
-    });
-  }
 
-  // Method to load podium results
-  loadPodiumResults(competitionId: string): void {
-    this.isLoading = true;
-    this.participationService.getCompetitionPodium(competitionId).subscribe({
-      next: (data) => {
-        this.dataSource = data;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Failed to load podium results:', error);
-        this.isLoading = false;
-      }
-    });
-  }
+  huntParticipation(userId: string, competitionId: string): void {
+    if (!userId?.trim()) {
+      this.errorMessage = 'User ID is required and cannot be empty.';
+      return;
+    }
 
-  registerParticipation(userId: string, competitionId: string): void {
-    this.participationService.registerParticipation({ userId, competitionId }).subscribe({
+    if (!competitionId?.trim()) {
+      this.errorMessage = 'Competition ID is required and cannot be empty.';
+      return;
+    }
+
+
+    const huntRequest = {
+      participationId: userId.trim(),
+      speciesId: competitionId.trim(),
+      weight: 0
+    };
+
+
+    this.huntService.registerHunt(huntRequest).subscribe({
       next: (response) => {
-        // Handle successful registration
-        console.log('Registration successful:', response);
+        console.log('Hunt registered successfully:', response);
+        this.errorMessage = '';
+
       },
-      error: (error) => {
-        console.error('Failed to register participation:', error);
+      error: (err) => {
+        console.error('Error registering hunt:', err);
+        this.errorMessage = 'An error occurred while registering the hunt. Please try again.';
+      
       }
     });
   }
+
 }
