@@ -8,10 +8,22 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ParticipationService, ParticipationResponse } from '../../../services/Participation.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ParticipationService } from '../../../services/Participation.service';
 import { CompetitionService } from '../../../services/competition.service';
-import { UserService } from 'src/app/services/user-service.service';
 import { HuntService } from 'src/app/services/hunt.service';
+import { HuntDialogComponent } from './HuntDialog.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+
+interface ParticipationData {
+  id: string;
+  userId: string;
+  competitionId: string;
+  username: string;
+  code: string;
+  results?: any[];
+}
 
 @Component({
   selector: 'app-participation',
@@ -25,23 +37,84 @@ import { HuntService } from 'src/app/services/hunt.service';
     MatMenuModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ],
-  templateUrl: './participation.component.html',
+  template: `
+    <div class="container mx-4 my-4">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Participations</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div *ngIf="isLoading" class="flex justify-center my-4">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+
+          <div *ngIf="errorMessage" class="text-red-600 my-2 p-4">
+            {{ errorMessage }}
+          </div>
+
+          <table mat-table [dataSource]="dataSource" class="w-full" *ngIf="!isLoading">
+            <ng-container matColumnDef="username">
+              <th mat-header-cell *matHeaderCellDef>Participant</th>
+              <td mat-cell *matCellDef="let element">{{ element.username }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>Competition</th>
+              <td mat-cell *matCellDef="let element">{{ element.code }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let element">
+                <button
+                  mat-icon-button
+                  (click)="openHuntDialog(element)"
+                  [disabled]="!element.id">
+                  <mat-icon>add_circle</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <div *ngIf="!isLoading && dataSource.length === 0" class="p-4 text-center">
+            No participations found.
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  `,
+  styles: [`
+    .container {
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+    }
+    .mat-column-actions {
+      width: 80px;
+      text-align: center;
+    }
+  `]
 })
 export class ParticipationComponent implements OnInit {
-  displayedColumns: string[] = ['userName', 'competitionName', 'actions'];
+  displayedColumns: string[] = ['username', 'code', 'actions'];
   dataSource: any[] = [];
   isLoading = true;
   errorMessage: string = '';
 
-
   constructor(
     private participationService: ParticipationService,
-    private userService: UserService,
     private competitionService: CompetitionService,
     private dialog: MatDialog,
-    private huntService: HuntService
+    private huntService: HuntService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -50,80 +123,79 @@ export class ParticipationComponent implements OnInit {
 
   loadParticipations(): void {
     this.isLoading = true;
-    this.participationService.getAllParticipations().subscribe({
-      next: (participations) => {
-        this.dataSource = participations.map(participation => {
-          return {
-            ...participation,
-            userName: '',
-            competitionName: ''
-          };
+    this.errorMessage = '';
+
+    this.participationService.getAllParticipations().pipe(
+      map(participations => participations.map(participation => {
+        return forkJoin({
+          participation: of(participation),
+          results: this.participationService.getCompetitionResults(participation.userId, participation.competitionId).pipe(
+            catchError(() => of([]))
+          )
         });
-        this.loadAdditionalDetails();
+      })),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: (observables) => {
+        forkJoin(observables).subscribe({
+          next: (results) => {
+            this.dataSource = results.map(result => ({
+              id: result.participation.id,
+              username: result.participation.username, // Placeholder, update as needed
+              code: result.participation.code, // Placeholder, update as needed
+
+            }));
+          },
+          error: (error) => {
+            console.error('Error loading details:', error);
+            this.errorMessage = 'Error loading participation details';
+          }
+        });
       },
       error: (error) => {
         console.error('Failed to load participations:', error);
-        this.isLoading = false;
+        this.errorMessage = 'Failed to load participations';
+        this.dataSource = [];
       }
     });
   }
 
-  loadAdditionalDetails(): void {
-    this.dataSource.forEach(participation => {
-      this.userService.getUserById(participation.userId).subscribe({
-        next: (user) => {
-          participation.username = `${user.firstName} ${user.lastName}`;
-        },
-        error: (error) => {
-          console.error('Failed to load user details:', error);
-        }
-      });
-
-      this.competitionService.getCompetitionById(participation.competitionId).subscribe({
-        next: (competition) => {
-          participation.competitionName = competition.code;
-        },
-        error: (error) => {
-          console.error('Failed to load competition details:', error);
-        }
-      });
+  openHuntDialog(participation: ParticipationData): void {
+    const speciesId = participation.results?.[0]?.speciesId || 'you must enter the species id';
+    const dialogRef = this.dialog.open(HuntDialogComponent, {
+      width: '400px',
+      data: {
+        participationId: participation.id,
+        speciesId: speciesId
+      }
     });
-    this.isLoading = false;
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.registerHunt(result);
+      }
+    });
   }
 
-
-  huntParticipation(userId: string, competitionId: string): void {
-    if (!userId?.trim()) {
-      this.errorMessage = 'User ID is required and cannot be empty.';
-      return;
-    }
-
-    if (!competitionId?.trim()) {
-      this.errorMessage = 'Competition ID is required and cannot be empty.';
-      return;
-    }
-
-
-    const huntRequest = {
-      participationId: userId.trim(),
-      speciesId: competitionId.trim(),
-      weight: 0
-    };
-
-
-    this.huntService.registerHunt(huntRequest).subscribe({
-      next: (response) => {
-        console.log('Hunt registered successfully:', response);
-        this.errorMessage = '';
-
+  private registerHunt(huntData: any): void {
+    this.huntService.registerHunt(huntData).subscribe({
+      next: () => {
+        this.showSnackBar('Hunt registered successfully!', 'success');
+        this.loadParticipations();
       },
-      error: (err) => {
-        console.error('Error registering hunt:', err);
-        this.errorMessage = 'An error occurred while registering the hunt. Please try again.';
-      
+      error: (error) => {
+        console.error('Error registering hunt:', error);
+        this.showSnackBar('Failed to register hunt', 'error');
       }
     });
   }
 
+  private showSnackBar(message: string, type: 'success' | 'error'): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: type === 'success' ? ['bg-green-500'] : ['bg-red-500']
+    });
+  }
 }

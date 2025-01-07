@@ -44,8 +44,6 @@ export class FullComponent implements OnInit {
 
   @ViewChild('leftsidenav')
   public sidenav: MatSidenav | any;
-
-  //get options from service
   private layoutChangesSubscription = Subscription.EMPTY;
   private isMobileScreen = false;
   private isContentWidthFixed = true;
@@ -57,7 +55,7 @@ export class FullComponent implements OnInit {
   }
 
   constructor(private breakpointObserver: BreakpointObserver, private navService: NavService) {
-    
+
     this.htmlElement = document.querySelector('html')!;
     this.htmlElement.classList.add('light-theme');
     this.layoutChangesSubscription = this.breakpointObserver

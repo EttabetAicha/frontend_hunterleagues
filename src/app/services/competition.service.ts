@@ -17,7 +17,7 @@ interface Competition {
   providedIn: 'root'
 })
 export class CompetitionService {
-  private apiUrl = 'http://localhost:8081/api/competitions'; // Adjust the URL to your backend endpoint
+  private apiUrl = 'http://localhost:8081/api/competitions';
 
   constructor(private http: HttpClient) {}
 
@@ -37,7 +37,5 @@ export class CompetitionService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getCompetitionById(id: string): Observable<Competition> {
-    return this.http.get<Competition>(`${this.apiUrl}/${id}`);
-  }
+ 
 }

@@ -18,33 +18,34 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule
   ],
   template: `
-    <h2 mat-dialog-title>Add Hunt</h2>
-    <form [formGroup]="huntForm" (ngSubmit)="onSubmit()">
-      <div mat-dialog-content>
-        <mat-form-field class="full-width">
-          <mat-label>Weight</mat-label>
-          <input matInput type="number" formControlName="weight" required>
-          <mat-error *ngIf="huntForm.get('weight')?.hasError('required')">
-            Weight is required
-          </mat-error>
-          <mat-error *ngIf="huntForm.get('weight')?.hasError('min')">
-            Weight must be greater than 0
-          </mat-error>
-        </mat-form-field>
-      </div>
-      <div mat-dialog-actions>
-        <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!huntForm.valid">
-          Add Hunt
-        </button>
-      </div>
-    </form>
-  `,
-  styles: [`
-    .full-width {
-      width: 100%;
-    }
-  `]
+    <div class="p-4">
+      <h2 mat-dialog-title class="text-xl font-bold mb-4">Add Hunt</h2>
+      <form [formGroup]="huntForm" (ngSubmit)="onSubmit()">
+        <div mat-dialog-content>
+          <mat-form-field class="w-full">
+            <mat-label>Weight (kg)</mat-label>
+            <input matInput type="number" formControlName="weight" required step="0.1">
+            <mat-error *ngIf="huntForm.get('weight')?.hasError('required')">
+              Weight is required
+            </mat-error>
+            <mat-error *ngIf="huntForm.get('weight')?.hasError('min')">
+              Weight must be greater than 0
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div mat-dialog-actions class="flex justify-end gap-2 mt-4">
+          <button mat-button type="button" (click)="onCancel()">Cancel</button>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!huntForm.valid">
+            Add Hunt
+          </button>
+        </div>
+      </form>
+    </div>
+  `
 })
 export class HuntDialogComponent {
   huntForm: FormGroup;
@@ -55,7 +56,7 @@ export class HuntDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { participationId: string, speciesId: string }
   ) {
     this.huntForm = this.fb.group({
-      weight: ['', [Validators.required, Validators.min(0)]]
+      weight: ['', [Validators.required, Validators.min(0.1)]]
     });
   }
 
@@ -69,6 +70,7 @@ export class HuntDialogComponent {
       this.dialogRef.close(huntData);
     }
   }
+  
 
   onCancel(): void {
     this.dialogRef.close();
