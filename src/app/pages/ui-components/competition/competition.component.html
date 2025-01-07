@@ -54,14 +54,7 @@
                 <mat-icon class="icon-sm">person_add</mat-icon>
                 Participate
               </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteCompetition(competition.id)"
-                class="delete-button"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+
               <button
               mat-raised-button
               color="accent"
@@ -71,6 +64,14 @@
               <mat-icon class="icon-sm">emoji_events</mat-icon>
               Show Podium
             </button>
+            <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteCompetition(competition.id)"
+                class="delete-button"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </div>
 
