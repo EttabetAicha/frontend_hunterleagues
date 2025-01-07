@@ -34,34 +34,34 @@ export const UiComponentsRoutes: Routes = [
         component: ParticipationComponent,
       },
 
-      {
-        path: 'badge',
-        component: AppBadgeComponent,
-      },
-      {
-        path: 'chips',
-        component: AppChipsComponent,
-      },
-      {
-        path: 'lists',
-        component: AppListsComponent,
-      },
-      {
-        path: 'menu',
-        component: AppMenuComponent,
-      },
-      {
-        path: 'tooltips',
-        component: AppTooltipsComponent,
-      },
-      {
-        path: 'forms',
-        component: AppFormsComponent,
-      },
-      {
-        path: 'tables',
-        component: AppTablesComponent,
-      },
+      // {
+      //   path: 'badge',
+      //   component: AppBadgeComponent,
+      // },
+      // {
+      //   path: 'chips',
+      //   component: AppChipsComponent,
+      // },
+      // {
+      //   path: 'lists',
+      //   component: AppListsComponent,
+      // },
+      // {
+      //   path: 'menu',
+      //   component: AppMenuComponent,
+      // },
+      // {
+      //   path: 'tooltips',
+      //   component: AppTooltipsComponent,
+      // },
+      // {
+      //   path: 'forms',
+      //   component: AppFormsComponent,
+      // },
+      // {
+      //   path: 'tables',
+      //   component: AppTablesComponent,
+      // },
     ],
   },
 ];
