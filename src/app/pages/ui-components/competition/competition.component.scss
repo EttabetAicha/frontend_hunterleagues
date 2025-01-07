@@ -1,6 +1,8 @@
 .cardWithShadow {
   margin: 16px;
   border-radius: 8px;
+ 
+  padding: 28px !important;
 
   .header-container {
     display: flex;
@@ -30,7 +32,8 @@
   .competitions-container {
     display: grid;
     gap: 20px;
-    
+
+
 
     .competition-card {
       background: rgb(255, 254, 254);

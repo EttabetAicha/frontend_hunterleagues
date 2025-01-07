@@ -9,7 +9,7 @@
       </button>
     </div>
 
-    <!-- Competition Cards Grid -->
+
     <div class="competitions-container" *ngIf="!isLoading; else loading">
       <mat-card *ngFor="let competition of dataSource" class="competition-card">
         <mat-card-content class="competition-content">
@@ -62,6 +62,15 @@
               >
                 <mat-icon>delete</mat-icon>
               </button>
+              <button
+              mat-raised-button
+              color="accent"
+              (click)="showPodium(competition.id)"
+              class="podium-button"
+            >
+              <mat-icon class="icon-sm">emoji_events</mat-icon>
+              Show Podium
+            </button>
             </div>
           </div>
 

@@ -13,6 +13,7 @@ import { AddCompetitionDialogComponent } from './add-competition-dialog.componen
 import { ParticipationService } from 'src/app/services/Participation.service';
 import { LoginService } from 'src/app/services/loginService.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PodiumDialogComponent } from './PodiumDialogComponent.component';
 // import { EditCompetitionDialogComponent } from './edit-competition-dialog/edit-competition-dialog.component';
 
 
@@ -49,6 +50,7 @@ export class CompetitionComponent implements OnInit {
   displayedColumns: string[] = ['rowNumber', 'location', 'date', 'speciesType', 'minParticipants', 'maxParticipants', 'openRegistration', 'actions'];
   dataSource: Competition[] = [];
   isLoading = true;
+  podiumData: any[] = [];
 
   constructor(
     private competitionService: CompetitionService,
@@ -135,6 +137,20 @@ export class CompetitionComponent implements OnInit {
         this.snackBar.open('Failed to register participation.', 'Close', {
           duration: 3000,
         });
+      }
+    });
+  }
+  showPodium(competitionId: string): void {
+    this.participationService.getCompetitionPodium(competitionId).subscribe({
+      next: (data) => {
+        this.podiumData = data;
+        this.dialog.open(PodiumDialogComponent, {
+          width: '400px',
+          data: { podium: this.podiumData }
+        });
+      },
+      error: (error) => {
+        console.error('Failed to fetch podium data', error);
       }
     });
   }
