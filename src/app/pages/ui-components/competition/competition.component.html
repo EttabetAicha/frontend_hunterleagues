@@ -1,34 +1,85 @@
 <mat-card class="cardWithShadow">
-  <mat-card-content>
-    <mat-card-title>Competitions List</mat-card-title>
-    <button mat-raised-button color="primary" (click)="openAddDialog()" style="margin: 12px;">
-      <mat-icon>add</mat-icon> Create Competition
-    </button>
+  <mat-card-content class="p-6">
+    <!-- Header Section -->
+    <div class="header-container">
+      <h1 class="title">Competitions List</h1>
+      <button mat-raised-button style="background-color: rgb(210, 132, 30);color: aliceblue;" (click)="openAddDialog()" class="create-button">
+        <mat-icon class="icon-sm">add</mat-icon>
+        Create Competition
+      </button>
+    </div>
 
+    <!-- Competition Cards Grid -->
     <div class="competitions-container" *ngIf="!isLoading; else loading">
-      <mat-card *ngFor="let competition of dataSource" class="competition-card" style="width: 40%;">
-        <mat-card-header>
-          <mat-card-title>{{ competition.location }}</mat-card-title>
-          <mat-card-subtitle>{{ competition.date }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Type: {{ competition.speciesType }}</p>
-          <p>Min Participants: {{ competition.minParticipants }}</p>
-          <p>Max Participants: {{ competition.maxParticipants }}</p>
-          <p>Open Registration: {{ competition.openRegistration }}</p>
+      <mat-card *ngFor="let competition of dataSource" class="competition-card">
+        <mat-card-content class="competition-content">
+          <!-- Main Info Section -->
+          <div class="grid-layout">
+            <!-- Location and Date -->
+            <div class="main-info">
+              <div class="info-item">
+                <mat-icon class="icon-sm">location_on</mat-icon>
+                <span>{{ competition.location }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon class="icon-sm">calendar_today</mat-icon>
+                <span>{{ competition.date | date }}</span>
+              </div>
+            </div>
+
+            <!-- Competition Details -->
+            <div class="details-section">
+              <div class="detail-item">
+                <span class="label">Type:</span>
+                <span>{{ competition.speciesType }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="icon-sm">group</mat-icon>
+                <span>{{ competition.minParticipants }}/{{ competition.maxParticipants }} participants</span>
+              </div>
+              <div class="detail-item subtitle">
+                Min: {{ competition.minParticipants }} participants
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="actions-section">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="participate(competition.id)"
+                class="participate-button"
+                [disabled]="!competition.openRegistration"
+              >
+                <mat-icon class="icon-sm">person_add</mat-icon>
+                Participate
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteCompetition(competition.id)"
+                class="delete-button"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Registration Status -->
+          <div class="registration-status">
+            <div class="status-indicator" [class.open]="competition.openRegistration"></div>
+            <span class="status-text">
+              Registration {{ competition.openRegistration ? 'Open' : 'Closed' }}
+            </span>
+          </div>
         </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="accent" (click)="participate(competition.id)">
-            <mat-icon>person_add</mat-icon> Participate
-          </button>
-          <!-- <button mat-button (click)="editCompetition(competition.id)">Edit</button> -->
-          <button mat-button (click)="deleteCompetition(competition.id)">Delete</button>
-        </mat-card-actions>
       </mat-card>
     </div>
+
+    <!-- Loading Template -->
     <ng-template #loading>
       <div class="loading-container">
-        <mat-spinner></mat-spinner>
+        <mat-spinner diameter="40"></mat-spinner>
       </div>
     </ng-template>
   </mat-card-content>

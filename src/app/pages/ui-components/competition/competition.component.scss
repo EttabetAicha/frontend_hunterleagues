@@ -1,0 +1,150 @@
+.cardWithShadow {
+  margin: 16px;
+  border-radius: 8px;
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .title {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .create-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .icon-sm {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+    }
+  }
+
+  .competitions-container {
+    display: grid;
+    gap: 20px;
+    
+
+    .competition-card {
+      background: rgb(255, 254, 254);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 8px;
+      width: 70%;
+
+
+      .competition-content {
+        padding: 21px;
+
+        .grid-layout {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+          gap: 24px;
+          margin-bottom: 16px;
+
+          @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+        }
+
+        .main-info {
+          .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: rgba(0, 0, 0, 0.87);
+
+            .icon-sm {
+              color: rgba(0, 0, 0, 0.54);
+              font-size: 18px;
+              height: 18px;
+              width: 18px;
+            }
+          }
+        }
+
+        .details-section {
+          .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+
+            .label {
+              font-weight: 500;
+            }
+
+            &.subtitle {
+              color: rgba(0, 0, 0, 0.54);
+            }
+
+            .icon-sm {
+              color: rgba(0, 0, 0, 0.54);
+              font-size: 18px;
+              height: 18px;
+              width: 18px;
+            }
+          }
+        }
+
+        .actions-section {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+          align-items: center;
+
+          .participate-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .delete-button {
+            color: #dc2626;
+          }
+        }
+
+        .registration-status {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding-top: 16px;
+          margin-top: 16px;
+          border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+          .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #dc2626;
+
+            &.open {
+              background-color: #10b981;
+            }
+          }
+
+          .status-text {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87);
+          }
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+}
