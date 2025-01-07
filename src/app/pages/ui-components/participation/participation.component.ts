@@ -23,6 +23,7 @@ interface ParticipationData {
   username: string;
   code: string;
   results?: any[];
+  score:DoubleRange
 }
 
 @Component({
@@ -66,6 +67,11 @@ interface ParticipationData {
               <th mat-header-cell *matHeaderCellDef>Competition</th>
               <td mat-cell *matCellDef="let element">{{ element.code }}</td>
             </ng-container>
+            <ng-container matColumnDef="score">
+              <th mat-header-cell *matHeaderCellDef>Score</th>
+              <td mat-cell *matCellDef="let element">{{ element.score }}</td>
+            </ng-container>
+
 
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
@@ -104,7 +110,7 @@ interface ParticipationData {
   `]
 })
 export class ParticipationComponent implements OnInit {
-  displayedColumns: string[] = ['username', 'code', 'actions'];
+  displayedColumns: string[] = ['username', 'code','score', 'actions'];
   dataSource: any[] = [];
   isLoading = true;
   errorMessage: string = '';
@@ -141,11 +147,14 @@ export class ParticipationComponent implements OnInit {
           next: (results) => {
             this.dataSource = results.map(result => ({
               id: result.participation.id,
-              username: result.participation.username, // Placeholder, update as needed
-              code: result.participation.code, // Placeholder, update as needed
+              username: result.participation.username,
+              code: result.participation.code,
+              score:result.participation.score
 
             }));
+            console.log(this.dataSource)
           },
+
           error: (error) => {
             console.error('Error loading details:', error);
             this.errorMessage = 'Error loading participation details';

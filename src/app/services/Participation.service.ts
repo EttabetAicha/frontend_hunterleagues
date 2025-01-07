@@ -9,6 +9,7 @@ export interface ParticipationResponse {
   username: string;
   competitionName?: string;
   code: string;
+  score:DoubleRange;
 }
 @Injectable({
   providedIn: 'root'
