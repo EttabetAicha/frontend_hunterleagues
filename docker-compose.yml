@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - samurai-network
+
+networks:
+  samurai-network:
+    external: true
+    name: backend_samurai-network
+
