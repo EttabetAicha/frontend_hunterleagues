@@ -17,7 +17,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/AuthInterceptor.interceptor';
 import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects'; 
+import { provideEffects } from '@ngrx/effects';
+import { usersReducer } from './pages/ui-components/users/user.reducer';
+import { competitionsReducer } from './pages/ui-components/competition/competitions.reducer';
+import { speciesReducer } from './pages/ui-components/species/species.reducer';
+import { UsersEffects } from './pages/ui-components/users/user.effects';
+import { CompetitionsEffects } from './pages/ui-components/competition/competitions.effects';
+import { SpeciesEffects } from './pages/ui-components/species/species.effects';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -34,7 +40,11 @@ export const appConfig: ApplicationConfig = {
         multi: true,
     },
     importProvidersFrom(FormsModule, ReactiveFormsModule, MaterialModule, TablerIconsModule.pick(TablerIcons), NgScrollbarModule),
-    provideStore(),
-    provideEffects()
+    provideStore({
+      users: usersReducer,
+      competitions: competitionsReducer,
+      species: speciesReducer
+    }),
+    provideEffects([UsersEffects, CompetitionsEffects, SpeciesEffects])
 ],
 };
