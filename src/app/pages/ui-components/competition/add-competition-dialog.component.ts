@@ -8,7 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import { CompetitionService } from '../../../services/competition.service';
+import { Store } from '@ngrx/store';
+import * as CompetitionActions from './competitions.actions';
 
 @Component({
   selector: 'app-add-competition-dialog',
@@ -284,7 +285,7 @@ export class AddCompetitionDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private competitionService: CompetitionService,
+    private store: Store,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<AddCompetitionDialogComponent>
   ) {
@@ -331,23 +332,12 @@ export class AddCompetitionDialogComponent implements OnInit {
       const competitionData = { ...this.competitionForm.value };
       competitionData.date = new Date(competitionData.date).toISOString();
 
-      this.competitionService.addCompetition(competitionData).subscribe({
-        next: () => {
-          this.snackBar.open('Competition created successfully! 🎉', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.dialogRef.close(true);
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          this.snackBar.open('Failed to create competition. Please try again.', 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-          console.error('Failed to create competition', error);
-        }
+      this.store.dispatch(CompetitionActions.addCompetition({ competition: competitionData }));
+      this.snackBar.open('Competition created successfully! 🎉', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
       });
+      this.dialogRef.close(true);
     }
   }
 
