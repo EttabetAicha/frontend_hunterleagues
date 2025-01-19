@@ -8,14 +8,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CompetitionService } from '../../../services/competition.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { AddCompetitionDialogComponent } from './add-competition-dialog.component';
 import { ParticipationService } from 'src/app/services/Participation.service';
 import { LoginService } from 'src/app/services/loginService.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PodiumDialogComponent } from './PodiumDialogComponent.component';
-// import { EditCompetitionDialogComponent } from './edit-competition-dialog/edit-competition-dialog.component';
-
+import * as CompetitionActions from './competitions.actions';
 
 interface Competition {
   id: string;
@@ -44,38 +44,25 @@ interface Competition {
   ],
   templateUrl: './competition.component.html',
   styleUrls: ['./competition.component.scss']
-
 })
 export class CompetitionComponent implements OnInit {
   displayedColumns: string[] = ['rowNumber', 'location', 'date', 'speciesType', 'minParticipants', 'maxParticipants', 'openRegistration', 'actions'];
-  dataSource: Competition[] = [];
-  isLoading = true;
-  podiumData: any[] = [];
+  competitions$: Observable<Competition[]>;
+  isLoading$: Observable<boolean>;
 
   constructor(
-    private competitionService: CompetitionService,
-    private participationService:ParticipationService,
-    private loginService: LoginService,
+    private store: Store<{ competitions: Competition[]; loading: boolean }>,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
-
-  ) {}
-
-  ngOnInit(): void {
-    this.loadCompetitions();
+    private snackBar: MatSnackBar,
+    private loginService: LoginService,
+    private participationService: ParticipationService
+  ) {
+    this.competitions$ = store.select(state => state.competitions);
+    this.isLoading$ = store.select(state => state.loading);
   }
 
-  loadCompetitions(): void {
-    this.competitionService.getCompetitions().subscribe({
-      next: (data) => {
-        this.dataSource = data.content;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Failed to load competitions:', error);
-        this.isLoading = false;
-      }
-    });
+  ngOnInit(): void {
+    this.store.dispatch(CompetitionActions.loadCompetitions());
   }
 
   openAddDialog(): void {
@@ -85,10 +72,15 @@ export class CompetitionComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadCompetitions();
+        this.store.dispatch(CompetitionActions.addCompetition({ competition: result }));
       }
     });
   }
+
+  deleteCompetition(id: string): void {
+    this.store.dispatch(CompetitionActions.deleteCompetition({ competitionId: id }));
+  }
+
   participate(competitionId: string): void {
     const userInfo = this.loginService.getUserInfoFromToken();
     console.log(userInfo);
@@ -124,6 +116,7 @@ export class CompetitionComponent implements OnInit {
       });
     }
   }
+
   registerParticipation(userId: string, competitionId: string): void {
     this.participationService.registerParticipation({ userId, competitionId }).subscribe({
       next: (response) => {
@@ -140,28 +133,17 @@ export class CompetitionComponent implements OnInit {
       }
     });
   }
+
   showPodium(competitionId: string): void {
     this.participationService.getCompetitionPodium(competitionId).subscribe({
       next: (data) => {
-        this.podiumData = data;
         this.dialog.open(PodiumDialogComponent, {
           width: '400px',
-          data: { podium: this.podiumData }
+          data: { podium: data }
         });
       },
       error: (error) => {
         console.error('Failed to fetch podium data', error);
-      }
-    });
-  }
-
-  deleteCompetition(id: string): void {
-    this.competitionService.deleteCompetition(id).subscribe({
-      next: () => {
-        this.dataSource = this.dataSource.filter(competition => competition.id !== id);
-      },
-      error: (error) => {
-        console.error('Failed to delete competition:', error);
       }
     });
   }

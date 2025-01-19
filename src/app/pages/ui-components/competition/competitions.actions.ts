@@ -56,3 +56,33 @@ export const deleteCompetitionFailure = createAction(
   '[Competitions] Delete Competition Failure',
   props<{ error: any }>()
 );
+
+export const registerParticipation = createAction(
+  '[Competitions] Register Participation',
+  props<{ userId: string, competitionId: string }>()
+);
+
+export const registerParticipationSuccess = createAction(
+  '[Competitions] Register Participation Success',
+  props<{ response: any }>()
+);
+
+export const registerParticipationFailure = createAction(
+  '[Competitions] Register Participation Failure',
+  props<{ error: any }>()
+);
+
+export const loadCompetitionPodium = createAction(
+  '[Competitions] Load Competition Podium',
+  props<{ competitionId: string }>()
+);
+
+export const loadCompetitionPodiumSuccess = createAction(
+  '[Competitions] Load Competition Podium Success',
+  props<{ podiumData: any[] }>()
+);
+
+export const loadCompetitionPodiumFailure = createAction(
+  '[Competitions] Load Competition Podium Failure',
+  props<{ error: any }>()
+);

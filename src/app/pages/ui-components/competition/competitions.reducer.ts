@@ -5,12 +5,14 @@ export interface CompetitionsState {
   competitions: any[];
   loading: boolean;
   error: any;
+  podiumData: any[];
 }
 
 export const initialState: CompetitionsState = {
   competitions: [],
   loading: false,
-  error: null
+  error: null,
+  podiumData: []
 };
 
 export const competitionsReducer = createReducer(
@@ -71,6 +73,35 @@ export const competitionsReducer = createReducer(
     loading: false
   })),
   on(CompetitionsActions.deleteCompetitionFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  })),
+  on(CompetitionsActions.registerParticipation, state => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(CompetitionsActions.registerParticipationSuccess, (state, { response }) => ({
+    ...state,
+    loading: false
+  })),
+  on(CompetitionsActions.registerParticipationFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  })),
+  on(CompetitionsActions.loadCompetitionPodium, state => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(CompetitionsActions.loadCompetitionPodiumSuccess, (state, { podiumData }) => ({
+    ...state,
+    podiumData,
+    loading: false
+  })),
+  on(CompetitionsActions.loadCompetitionPodiumFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error
